@@ -1,0 +1,9 @@
+/*canvas {
+  border: 1px dotted;
+}
+*/
+textarea {
+  color: green;
+  resize: none;
+  font: 13px courier;
+}
