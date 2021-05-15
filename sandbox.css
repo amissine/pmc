@@ -2,8 +2,8 @@
   border: 1px dotted;
 }
 */
-textarea {
-  color: green;
+textarea.event-log {
+  color: purple;
   resize: none;
   font: 13px courier;
 }

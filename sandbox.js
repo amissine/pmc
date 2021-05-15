@@ -43,6 +43,7 @@ function consumeTrades (jsonArray) { // latest first, if any {{{1
   if (l > 0) {
     log.textContent = 'XLM-USD coinbase latest price '+jsonArray[0].price+
       ', '+l+' trades since '+jsonArray[l-1].time+'\n'+log.textContent
+    console.log(jsonArray)
   }
 }
 
