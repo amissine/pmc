@@ -1,11 +1,24 @@
 const windowSize = 120000; // {{{1
-const size = 1000;
+const datasize = 1000;
 const data = [
-  Array(size).fill(null),
-  Array(size).fill(null),
-  Array(size).fill(null),
-  Array(size).fill(null),
+  Array(datasize).fill(null),
+  Array(datasize).fill(null),
+  Array(datasize).fill(null),
+  Array(datasize).fill(null),
 ];
+const data2 = [
+  Array(datasize).fill(null),
+  Array(datasize).fill(null),
+  Array(datasize).fill(null),
+  Array(datasize).fill(null),
+]
+const scales = {
+  x: {},
+  y: {
+    auto: false,
+    range: [-1000, +1000]
+  }
+}
 
 function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {{{1
   if (data[0].length < umf.length) {
@@ -15,12 +28,16 @@ function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {
     for (let i = 0; i < umf.length; i++) {
       data[0]              [i] = umf[i].time
       data[1 + exchangeIdx][i] = umf[i].price
+      data2[0]              [i] = umf[i].time
+      data2[1 + exchangeIdx][i] = umf[i].amount
     }
     return;
   }
   for (let i = 0; i < umf.length; i++) {
     data[0].shift(); data[0].push(umf[i].time)
     data[1 + exchangeIdx].shift(); data[1 + exchangeIdx].push(umf[i].price)
+    data2[0].shift(); data2[0].push(umf[i].time)
+    data2[1 + exchangeIdx].shift(); data2[1 + exchangeIdx].push(umf[i].amount)
   }
 }
 
@@ -31,19 +48,10 @@ function getSize() { // {{{1
   }
 }
 
-const scales = { // {{{1
-  x: {},
-  y: {
-    auto: false,
-    range: [-3.2, 0.2]
-  }
-};
-
 const opts1 = { // {{{1
-  title: "Latest events",
+  title: "Latest XLM prices",
   ...getSize(),
   ms: 1,
-  //scales,
   series: // {{{2
   [ 
     {},
@@ -73,52 +81,58 @@ const opts1 = { // {{{1
 
 let u1 = new uPlot(opts1, data, document.getElementById('chart1')); // {{{1
 
-			const opts2 = { // {{{1
-				title: "Aggregated history",
-				...getSize(),
-				pxAlign: 0,
-				ms: 1,
-				scales,
-				pxSnap: false,
-				series: // {{{2
-				[
-					{},
-					{
-						stroke: "red",
-						paths: uPlot.paths.linear(),
-						spanGaps: true,
-						pxAlign: 0,
-						points: { show: true }
-					},
-					{
-						stroke: "blue",
-						paths: uPlot.paths.spline(),
-						spanGaps: true,
-						pxAlign: 0,
-						points: { show: true }
-					},
-					{
-						stroke: "purple",
-						paths: uPlot.paths.stepped({align: 1, pxSnap: false}),
-						spanGaps: true,
-						pxAlign: 0,
-						points: { show: true }
-					},
-				], // }}}2
-			};
+const opts2 = { // {{{1
+  title: "Latest XLM amounts",
+  scales,
+  ...getSize(),
+  pxAlign: 0,
+  ms: 1,
+  pxSnap: false,
+  series: // {{{2
+  [
+    {},
+    {
+      stroke: "red",
+      label: 'kraken',
+      paths: uPlot.paths.linear(),
+      spanGaps: true,
+      pxAlign: 0,
+      points: { show: true }
+    },
+    {
+      stroke: "blue",
+      label: 'bitfinex',
+      paths: uPlot.paths.spline(),
+      spanGaps: true,
+      pxAlign: 0,
+      points: { show: true }
+    },
+    {
+      stroke: "purple",
+      label: 'coinbase',
+      paths: uPlot.paths.stepped({align: 1, pxSnap: false}),
+      spanGaps: true,
+      pxAlign: 0,
+      points: { show: true }
+    },
+  ], // }}}2
+};
 
-			let u2 = new uPlot(opts2, data, document.getElementById('chart2')); // {{{1
+let u2 = new uPlot(opts2, data, document.getElementById('chart2')); // {{{1
 
+let freeze = false
 function update() // {{{1
 {
   const now 	= Date.now();
   const scale = {min: now - windowSize, max: now};
 
   u1.setData(data);
-  u2.setData(data);
+  u2.setData(data2);
   u1.setScale('x', scale);
   u2.setScale('x', scale);
-  requestAnimationFrame(update);
+  if (!freeze) {
+    requestAnimationFrame(update)
+  }
 }
 
-requestAnimationFrame(update)
+update()

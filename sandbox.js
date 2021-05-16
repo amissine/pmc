@@ -30,6 +30,7 @@ function feedResp () { // {{{1
   consumeTrades(this.response)
   if (feed == null) {
     log.textContent = "That's all, folks!.. 😅\n"+log.textContent
+    freeze = true
     return;
   }
   let cbbefore = this.getResponseHeader('cb-before')
@@ -38,7 +39,7 @@ function feedResp () { // {{{1
   }
 }
 
-const toUMF = [ // 1-sec aggregated trades {{{1
+const toUMF = [ // {{{1
   jsonArray => console.log(jsonArray),
   jsonArray => console.log(jsonArray),
   jsonArray => { // {{{2
