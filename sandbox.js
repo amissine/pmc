@@ -16,7 +16,7 @@ function feedReq () { // {{{1
     xhr.responseType = 'json'
     xhr.send()
   }
-  if (++count > 9) {
+  if (++count > 99) {
     clearInterval(feed); feed = null
     if (requestInProgress) {
       document.write("That's all, folks!.. 😅")
@@ -38,12 +38,34 @@ function feedResp () { // {{{1
   }
 }
 
+const toUMF = [ // 1-sec aggregated trades {{{1
+  jsonArray => console.log(jsonArray),
+  jsonArray => console.log(jsonArray),
+  jsonArray => { // {{{2
+    let umf = []
+    while (jsonArray.length > 0) {
+      let trade    = jsonArray.pop()
+      trade.price  = +trade.price
+      trade.amount = trade.side == 'buy' ? +trade.size : -trade.size
+      trade.time   = new Date(trade.time).getTime() // ms, UTC
+      delete trade.side
+      delete trade.size
+      delete trade.trade_id
+      umf.push(trade) // latest last
+    }
+    return umf;
+  }, // }}}2
+]
+
 function consumeTrades (jsonArray) { // latest first, if any {{{1
   let l = jsonArray.length
   if (l > 0) {
     log.textContent = 'XLM-USD coinbase latest price '+jsonArray[0].price+
       ', '+l+' trades since '+jsonArray[l-1].time+'\n'+log.textContent
-    console.log(jsonArray)
+    sendTradesXLM(2, toUMF[2](jsonArray)) // TODO worker thread
   }
 }
 
+function sendTradesXLM (exchangeIdx, umf) { // {{{1
+  recvTradesXLM(exchangeIdx, umf) // TODO send data to the UI channel
+}

@@ -1,5 +1,4 @@
 const windowSize = 120000; // {{{1
-const interval = 3000;
 const size = 1000;
 const data = [
   Array(size).fill(null),
@@ -8,15 +7,22 @@ const data = [
   Array(size).fill(null),
 ];
 
-function addData() // {{{1
-{
-  data[0].shift(); data[0].push(Date.now());
-  data[1].shift(); data[1].push(0 - Math.random());
-  data[2].shift(); data[2].push(-1 - Math.random());
-  data[3].shift(); data[3].push(-2 - Math.random());
+function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {{{1
+  if (data[0].length < umf.length) {
+    throw 'data[0].length '+data.length+', umf.length '+umf.length
+  }
+  if (data[0].length == umf.length) {
+    for (let i = 0; i < umf.length; i++) {
+      data[0]              [i] = umf[i].time
+      data[1 + exchangeIdx][i] = umf[i].price
+    }
+    return;
+  }
+  for (let i = 0; i < umf.length; i++) {
+    data[0].shift(); data[0].push(umf[i].time)
+    data[1 + exchangeIdx].shift(); data[1 + exchangeIdx].push(umf[i].price)
+  }
 }
-
-setInterval(addData, interval);
 
 function getSize() { // {{{1
   return {
