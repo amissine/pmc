@@ -110,7 +110,7 @@ const opts2 = { // {{{1
     {
       stroke: "purple",
       label: 'coinbase',
-      paths: uPlot.paths.stepped({align: 1, pxSnap: false}),
+      paths: uPlot.paths.bars(),
       spanGaps: true,
       pxAlign: 0,
       points: { show: true }
