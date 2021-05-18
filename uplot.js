@@ -16,7 +16,7 @@ const scales = {
   x: {},
   y: {
     auto: false,
-    range: [-1000, +1000]
+    range: [-500, +500]
   }
 }
 
@@ -120,9 +120,17 @@ const opts2 = { // {{{1
 
 let u2 = new uPlot(opts2, data, document.getElementById('chart2')); // {{{1
 
-let freeze = false
-function update() // {{{1
+let freeze = false // {{{1
+//let updateCount = 0
+function update()
 {
+  /*switch (updateCount++) {
+    case 0:
+      console.time('updateCount')
+      break
+    case 60:
+      console.timeEnd('updateCount') // updateCount: 1022ms - timer ended
+  }*/
   const now 	= Date.now();
   const scale = {min: now - windowSize, max: now};
 
