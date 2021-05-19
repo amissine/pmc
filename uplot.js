@@ -1,5 +1,5 @@
 const windowSize = 120000; // {{{1
-const datasize = 1000;
+const datasize = 10000;
 const data = [
   Array(datasize).fill(null),
   Array(datasize).fill(null),
@@ -121,6 +121,46 @@ const opts2 = { // {{{1
 
 let u2 = new uPlot(opts2, data, document.getElementById('charts')); // {{{1
 
+const opts3 = { // {{{1
+  title: "OHLCs",
+  width: 500,
+  height: window.innerHeight  / 4,
+  pxAlign: 0,
+  ms: 1,
+  cursor: { drag: { x: true, y: true } },
+  pxSnap: false,
+  series: // {{{2
+  [
+    {},
+    {
+      stroke: "red",
+      label: 'kraken',
+      paths: uPlot.paths.linear(),
+      //spanGaps: true,
+      pxAlign: 0,
+      points: { show: true }
+    },
+    {
+      stroke: "blue",
+      label: 'bitfinex',
+      paths: uPlot.paths.spline(),
+      //spanGaps: true,
+      pxAlign: 0,
+      points: { show: true }
+    },
+    {
+      stroke: "purple",
+      label: 'coinbase',
+      paths: uPlot.paths.bars(),
+      //spanGaps: true,
+      pxAlign: 0,
+      points: { show: true }
+    },
+  ], // }}}2
+};
+
+let u3 = new uPlot(opts3, data, document.getElementById('charts')); // {{{1
+
 let freeze = false // {{{1
 //let updateCount = 0
 function update()
@@ -134,11 +174,14 @@ function update()
   }*/
   const now 	= Date.now();
   const scale = {min: now - windowSize, max: now};
+  const scale3 = {min: now - windowSize*2, max: now};
 
   u1.setData(data);
   u2.setData(data2);
+  u3.setData(data);
   u1.setScale('x', scale);
   u2.setScale('x', scale);
+  u3.setScale('x', scale3);
   if (!freeze) {
     requestAnimationFrame(update)
   }
