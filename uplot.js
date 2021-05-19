@@ -16,7 +16,7 @@ const scales = {
   x: {},
   y: {
     auto: false,
-    range: [-500, +500]
+    range: [-1000, +1000]
   }
 }
 
@@ -59,27 +59,27 @@ const opts1 = { // {{{1
       stroke: "red",
       label: 'kraken',
       paths: uPlot.paths.linear(),
-      spanGaps: true,
+      //spanGaps: true,
       points: { show: true }
     },
     {
       stroke: "blue",
       label: 'bitfinex',
       paths: uPlot.paths.spline(),
-      spanGaps: true,
+      //spanGaps: true,
       points: { show: true }
     },
     {
       stroke: "purple",
       label: 'coinbase',
       paths: uPlot.paths.stepped({align: 1}),
-      spanGaps: true,
+      //spanGaps: true,
       points: { show: true }
     },
   ], // }}}2
 };
 
-let u1 = new uPlot(opts1, data, document.getElementById('chart1')); // {{{1
+let u1 = new uPlot(opts1, data, document.getElementById('charts')); // {{{1
 
 const opts2 = { // {{{1
   title: "Latest XLM amounts",
@@ -87,6 +87,7 @@ const opts2 = { // {{{1
   ...getSize(),
   pxAlign: 0,
   ms: 1,
+  cursor: { drag: { x: true, y: true } },
   pxSnap: false,
   series: // {{{2
   [
@@ -95,7 +96,7 @@ const opts2 = { // {{{1
       stroke: "red",
       label: 'kraken',
       paths: uPlot.paths.linear(),
-      spanGaps: true,
+      //spanGaps: true,
       pxAlign: 0,
       points: { show: true }
     },
@@ -103,7 +104,7 @@ const opts2 = { // {{{1
       stroke: "blue",
       label: 'bitfinex',
       paths: uPlot.paths.spline(),
-      spanGaps: true,
+      //spanGaps: true,
       pxAlign: 0,
       points: { show: true }
     },
@@ -111,14 +112,14 @@ const opts2 = { // {{{1
       stroke: "purple",
       label: 'coinbase',
       paths: uPlot.paths.bars(),
-      spanGaps: true,
+      //spanGaps: true,
       pxAlign: 0,
       points: { show: true }
     },
   ], // }}}2
 };
 
-let u2 = new uPlot(opts2, data, document.getElementById('chart2')); // {{{1
+let u2 = new uPlot(opts2, data, document.getElementById('charts')); // {{{1
 
 let freeze = false // {{{1
 //let updateCount = 0
