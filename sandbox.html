@@ -4,14 +4,15 @@
     <meta charset="utf-8">
     <title>Sandbox</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel='stylesheet' href='./sandbox.css'>
     <link rel="stylesheet" href="./uplot/uPlot.min.css">
+    <link rel='stylesheet' href='./sandbox.css'>
   </head>
   <body>
     <script src="./uplot/uPlot.iife.js"></script>
-    <div id="charts"></div>
+    <div id="charts">
+      <textarea readonly class="event-log" rows='16' cols='86'></textarea>
+    </div>
     <script src='./uplot.js'></script>
-    <textarea readonly class="event-log" rows='12' cols='88'></textarea>
     <script src='./sandbox.js'></script>
   </body>
 </html>

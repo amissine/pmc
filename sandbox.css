@@ -1,9 +1,12 @@
-/*canvas {
-  border: 1px dotted;
+.uplot {
+  display: inline-block;
+  margin-bottom: 1px;
 }
-*/
+
 textarea.event-log {
   color: purple;
+  display: inline-block;
   resize: none;
   font: 13px courier;
+  margin-right: 10px;
 }

@@ -79,8 +79,6 @@ const opts1 = { // {{{1
   ], // }}}2
 };
 
-let u1 = new uPlot(opts1, data, document.getElementById('charts')); // {{{1
-
 const opts2 = { // {{{1
   title: "Latest XLM amounts",
   scales,
@@ -119,11 +117,9 @@ const opts2 = { // {{{1
   ], // }}}2
 };
 
-let u2 = new uPlot(opts2, data, document.getElementById('charts')); // {{{1
-
 const opts3 = { // {{{1
-  title: "OHLCs",
-  width: 500,
+  title: "Aggregated history",
+  width: 600,
   height: window.innerHeight  / 4,
   pxAlign: 0,
   ms: 1,
@@ -160,6 +156,10 @@ const opts3 = { // {{{1
 };
 
 let u3 = new uPlot(opts3, data, document.getElementById('charts')); // {{{1
+
+let u1 = new uPlot(opts1, data, document.getElementById('charts')); // {{{1
+
+let u2 = new uPlot(opts2, data, document.getElementById('charts')); // {{{1
 
 let freeze = false // {{{1
 //let updateCount = 0
