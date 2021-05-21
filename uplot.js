@@ -1,18 +1,10 @@
 const windowSize = 120000; // {{{1
 const datasize = 2000;
-const data = [
-  Array(datasize).fill(null),
-  Array(datasize).fill(null),
-  Array(datasize).fill(null),
-  Array(datasize).fill(null),
-];
-const data2 = [
-  Array(datasize).fill(null),
-  Array(datasize).fill(null),
-  Array(datasize).fill(null),
-  Array(datasize).fill(null),
-]
-const scales = {
+const data = [ [], [], [], [] ] // trades
+const d = [ [], [], [], [], [], [], [] ]// aggregated buy and sell amounts
+let plot2min = +0, plot3min = +0
+
+const scales = { // {{{1
   x: {},
   y: {
     auto: false,
@@ -20,15 +12,45 @@ const scales = {
   }
 }
 
-function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {{{1
-  if (data[0].length < umf.length) {
-    throw 'data[0].length '+data.length+', umf.length '+umf.length
+class Agg5 { // {{{1
+  constructor() {
+    this.pt = this.ap = this.an  = +0
   }
+  add (t, a, cb) {
+    let qt = t - t % 5000
+    if (this.pt > 0) {
+      if (qt > this.pt) { // push and cleanup
+        cb(qt, a > 0 ? this.ap : this.an); this.pt = qt
+        if (a > 0) this.ap = +0; else this.an = +0
+      }
+    } else { // start aggregation
+      this.pt = qt
+    }
+    if (a > 0) this.ap += a; else this.an += a
+  }
+}
+
+let agg5 = [ new Agg5(), new Agg5(), new Agg5(), ]
+
+function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {{{1
+  let aIdx = (exchangeIdx + 1) * 2
   for (let i = 0; i < umf.length; i++) {
-    data[0].shift(); data[0].push(umf[i].time)
-    data[1 + exchangeIdx].shift(); data[1 + exchangeIdx].push(umf[i].price)
-    data2[0].shift(); data2[0].push(umf[i].time)
-    data2[1 + exchangeIdx].shift(); data2[1 + exchangeIdx].push(umf[i].amount)
+    data[0].push(umf[i].time)    
+    data[1 + exchangeIdx].push(umf[i].price)
+    while (plot3min > data[0][0]) {
+      data[0].shift()
+      data[1 + exchangeIdx].shift()
+    }
+
+    agg5[exchangeIdx].add(umf[i].time, umf[i].amount, (t, a) => {
+      let idx = a > 0 ? aIdx - 1 : aIdx
+      d[0].push(t)
+      d[idx].push(a)
+      while (plot2min > d[0][0]) {
+        d[0].shift()
+        d[idx].shift()
+      }
+    })
   }
 }
 
@@ -71,8 +93,8 @@ const opts1 = { // {{{1
 };
 
 const opts2 = { // {{{1
-  title: "Latest XLM amounts",
-  scales,
+  title: "Latest XLM amounts, 5s-aggregated",
+  //scales,
   ...getSize(),
   pxAlign: 0,
   ms: 1,
@@ -81,30 +103,66 @@ const opts2 = { // {{{1
   series: // {{{2
   [
     {},
-    {
+    { // {{{3
+      label: 'kraken buy',
       stroke: "red",
-      label: 'kraken',
-      paths: uPlot.paths.linear(),
-      pxAlign: 0,
-      points: { show: true }
-    },
-    {
-      stroke: "blue",
-      label: 'bitfinex',
-      paths: uPlot.paths.spline(),
-      pxAlign: 0,
-      points: { show: true }
-    },
-    {
-      stroke: "purple",
-      fill: "purple",
+      fill: "red",
       lineInterpolation: null,
       width: 1 / devicePixelRatio,
-      label: 'coinbase',
       paths: uPlot.paths.bars({ size: [1], align: -1 }),
       pxAlign: 0,
       points: { show: true }
     },
+    { // {{{3
+      label: 'kraken sell',
+      stroke: "red",
+      fill: "red",
+      lineInterpolation: null,
+      width: 1 / devicePixelRatio,
+      paths: uPlot.paths.bars({ size: [1], align: -1 }),
+      pxAlign: 0,
+      points: { show: true }
+    },
+    { // {{{3
+      label: 'bitfinex buy',
+      stroke: "blue",
+      fill: "blue",
+      lineInterpolation: null,
+      width: 1 / devicePixelRatio,
+      paths: uPlot.paths.bars({ size: [1], align: -1 }),
+      pxAlign: 0,
+      points: { show: true }
+    },
+    { // {{{3
+      label: 'bitfinex sell',
+      stroke: "blue",
+      fill: "blue",
+      lineInterpolation: null,
+      width: 1 / devicePixelRatio,
+      paths: uPlot.paths.bars({ size: [1], align: -1 }),
+      pxAlign: 0,
+      points: { show: true }
+    },
+    { // {{{3
+      label: 'coinbase buy',
+      stroke: "purple",
+      fill: "purple",
+      lineInterpolation: null,
+      width: 1 / devicePixelRatio,
+      paths: uPlot.paths.bars({ size: [1], align: -1 }),
+      pxAlign: 0,
+      points: { show: true }
+    },
+    { // {{{3
+      stroke: "purple",
+      fill: "purple",
+      lineInterpolation: null,
+      width: 1 / devicePixelRatio,
+      label: 'coinbase sell',
+      paths: uPlot.paths.bars({ size: [1], align: -1 }),
+      pxAlign: 0,
+      points: { show: true }
+    }, // }}}3
   ], // }}}2
 };
 
@@ -150,22 +208,14 @@ let u1 = new uPlot(opts1, data, document.getElementById('charts')); // {{{1
 let u2 = new uPlot(opts2, data, document.getElementById('charts')); // {{{1
 
 let freeze = false // {{{1
-//let updateCount = 0
 function update()
 {
-  /*switch (updateCount++) {
-    case 0:
-      console.time('updateCount')
-      break
-    case 60:
-      console.timeEnd('updateCount') // updateCount: 1022ms - timer ended
-  }*/
   const now 	= Date.now();
-  const scale = {min: now - windowSize, max: now};
-  const scale3 = {min: now - windowSize*2, max: now};
+  const scale = {min: now - windowSize, max: now};    plot2min = scale.min
+  const scale3 = {min: now - windowSize*2, max: now}; plot3min = scale3.min
 
   u1.setData(data);
-  u2.setData(data2);
+  u2.setData(d);
   u3.setData(data);
   u1.setScale('x', scale);
   u2.setScale('x', scale);
