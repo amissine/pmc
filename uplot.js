@@ -1,5 +1,5 @@
 const windowSize = 120000; // {{{1
-const datasize = 10000;
+const datasize = 2000;
 const data = [
   Array(datasize).fill(null),
   Array(datasize).fill(null),
@@ -23,15 +23,6 @@ const scales = {
 function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {{{1
   if (data[0].length < umf.length) {
     throw 'data[0].length '+data.length+', umf.length '+umf.length
-  }
-  if (data[0].length == umf.length) {
-    for (let i = 0; i < umf.length; i++) {
-      data[0]              [i] = umf[i].time
-      data[1 + exchangeIdx][i] = umf[i].price
-      data2[0]              [i] = umf[i].time
-      data2[1 + exchangeIdx][i] = umf[i].amount
-    }
-    return;
   }
   for (let i = 0; i < umf.length; i++) {
     data[0].shift(); data[0].push(umf[i].time)
@@ -94,7 +85,6 @@ const opts2 = { // {{{1
       stroke: "red",
       label: 'kraken',
       paths: uPlot.paths.linear(),
-      //spanGaps: true,
       pxAlign: 0,
       points: { show: true }
     },
@@ -102,15 +92,16 @@ const opts2 = { // {{{1
       stroke: "blue",
       label: 'bitfinex',
       paths: uPlot.paths.spline(),
-      //spanGaps: true,
       pxAlign: 0,
       points: { show: true }
     },
     {
       stroke: "purple",
+      fill: "purple",
+      lineInterpolation: null,
+      width: 1 / devicePixelRatio,
       label: 'coinbase',
-      paths: uPlot.paths.bars(),
-      //spanGaps: true,
+      paths: uPlot.paths.bars({ size: [1], align: -1 }),
       pxAlign: 0,
       points: { show: true }
     },
@@ -132,7 +123,6 @@ const opts3 = { // {{{1
       stroke: "red",
       label: 'kraken',
       paths: uPlot.paths.linear(),
-      //spanGaps: true,
       pxAlign: 0,
       points: { show: true }
     },
@@ -140,15 +130,13 @@ const opts3 = { // {{{1
       stroke: "blue",
       label: 'bitfinex',
       paths: uPlot.paths.spline(),
-      //spanGaps: true,
       pxAlign: 0,
       points: { show: true }
     },
     {
       stroke: "purple",
       label: 'coinbase',
-      paths: uPlot.paths.bars(),
-      //spanGaps: true,
+      paths: uPlot.paths.bars({ align: 1 }),
       pxAlign: 0,
       points: { show: true }
     },
