@@ -20,8 +20,7 @@ class Agg5 { // {{{1
     let qt = t - t % 5000
     if (this.pt > 0) {
       if (qt > this.pt) { // push and cleanup
-        cb(qt, a > 0 ? this.ap : this.an); this.pt = qt
-        if (a > 0) this.ap = +0; else this.an = +0
+        cb(qt, this.ap, this.an); this.pt = qt; this.ap = +0; this.an = +0
       }
     } else { // start aggregation
       this.pt = qt
@@ -29,26 +28,22 @@ class Agg5 { // {{{1
     if (a > 0) this.ap += a; else this.an += a
   }
 }
-
 let agg5 = [ new Agg5(), new Agg5(), new Agg5(), ]
 
 function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {{{1
-  let aIdx = (exchangeIdx + 1) * 2
+  let anIdx = (exchangeIdx + 1) * 2, apIdx = anIdx - 1
   for (let i = 0; i < umf.length; i++) {
-    data[0].push(umf[i].time)    
+    data[0]              .push(umf[i].time)    
     data[1 + exchangeIdx].push(umf[i].price)
     while (plot3min > data[0][0]) {
       data[0].shift()
       data[1 + exchangeIdx].shift()
     }
 
-    agg5[exchangeIdx].add(umf[i].time, umf[i].amount, (t, a) => {
-      let idx = a > 0 ? aIdx - 1 : aIdx
-      d[0].push(t)
-      d[idx].push(a)
+    agg5[exchangeIdx].add(umf[i].time, umf[i].amount, (t, ap, an) => {
+      d[0].push(t); d[apIdx].push(ap); d[anIdx].push(an)
       while (plot2min > d[0][0]) {
-        d[0].shift()
-        d[idx].shift()
+        d[0].shift(); d[apIdx].shift(); d[anIdx].shift()
       }
     })
   }
@@ -167,7 +162,7 @@ const opts2 = { // {{{1
 };
 
 const opts3 = { // {{{1
-  title: "Aggregated history",
+  title: "Aggregated history, 10s",
   width: 600,
   height: window.innerHeight  / 4,
   pxAlign: 0,
