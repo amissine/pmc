@@ -12,23 +12,44 @@ const scales = { // {{{1
   }
 }
 
-class Agg5 { // {{{1
-  constructor() {
-    this.pt = this.ap = this.an  = +0
+class Agg { // {{{1
+  constructor(paneInSeconds) {
+    this.paneMs = paneInSeconds * 1000
+    this.pt = this.ab = this.as = +0
+    this.o = this.h = this.l = this.c = +0
   }
-  add (t, a, cb) {
-    let qt = t - t % 5000
+  _agg (qt, cb, aggregate) {
     if (this.pt > 0) {
-      if (qt > this.pt) { // push and cleanup
-        cb(qt, this.ap, this.an); this.pt = qt; this.ap = +0; this.an = +0
+      if (qt > this.pt) {
+        this.pt = qt; cb(qt)
       }
     } else { // start aggregation
       this.pt = qt
     }
-    if (a > 0) this.ap += a; else this.an += a
+    aggregate()
+  }
+  bs (t, a, cb) {
+    this._agg(t - t % this.paneMs, 
+      qt => { cb(qt, this.ab, this.as); this.ab = this.as = +0 },
+      () => { if (a > 0) this.ab += a; else this.as += a })
+  }
+  ohlc (t, p, cb) {
+    this._agg(t - t % this.paneMs,
+      qt => { cb(qt, this.o, this.h, this.l, this.c); this.o = +0 },
+      () => {
+        if (this.o == 0) {
+          this.o = this.h = this.l = this.c = p; return;
+        }
+        if (this.h < p) this.h = p
+        else if (this.l > p) this.l = p
+        this.c = p
+      })
   }
 }
-let agg5 = [ new Agg5(), new Agg5(), new Agg5(), ]
+
+let agg5  = [ new Agg(5),  new Agg(5),  new Agg(5), ] // {{{1
+let agg10 = [ new Agg(10), new Agg(10), new Agg(10), ]
+let agg30 = [ new Agg(30), new Agg(30), new Agg(30), ]
 
 function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {{{1
   let anIdx = (exchangeIdx + 1) * 2, apIdx = anIdx - 1
@@ -40,7 +61,7 @@ function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {
       data[1 + exchangeIdx].shift()
     }
 
-    agg5[exchangeIdx].add(umf[i].time, umf[i].amount, (t, ap, an) => {
+    agg5[exchangeIdx].bs(umf[i].time, umf[i].amount, (t, ap, an) => {
       d[0].push(t); d[apIdx].push(ap); d[anIdx].push(an)
       while (plot2min > d[0][0]) {
         d[0].shift(); d[apIdx].shift(); d[anIdx].shift()
@@ -162,7 +183,7 @@ const opts2 = { // {{{1
 };
 
 const opts3 = { // {{{1
-  title: "Aggregated history, 10s",
+  title: "Aggregated history, 10s prices and 30s amounts",
   width: 600,
   height: window.innerHeight  / 4,
   pxAlign: 0,
