@@ -1,16 +1,28 @@
 const windowSize = 120000; // {{{1
-const datasize = 2000;
-const data = [ [], [], [], [] ] // trades
-const d = [ [], [], [], [], [], [], [] ]// aggregated buy and sell amounts
-let plot2min = +0, plot3min = +0
+const exchangePoolsize = 3
+const bsSize = exchangePoolsize * 2
+const ohlcSize = exchangePoolsize * 4
+const data = [ [] ] // raw trades, no aggreration
+for (let i = 0; i < exchangePoolsize; i++) {
+  data.push([])
+}
+const d = [ [] ] // 5s-aggregated buy and sell amounts
+for (let i = 0; i < bsSize; i++) {
+  d.push([])
+}
+const dagg1030 = [ [] ] // 30s buy/sell, 10s OHLC 
+for (let i = 0; i < bsSize + ohlcSize; i++) {
+  dagg1030.push([])
+}
+let plot2min = +0, plot3min = +0 // float with time
 
-const scales = { // {{{1
+/*const scales = { // {{{1
   x: {},
   y: {
     auto: false,
     range: [-1000, +1000]
   }
-}
+}*/
 
 class Agg { // {{{1
   constructor(paneInSeconds) {
@@ -47,25 +59,52 @@ class Agg { // {{{1
   }
 }
 
-let agg5  = [ new Agg(5),  new Agg(5),  new Agg(5), ] // {{{1
-let agg10 = [ new Agg(10), new Agg(10), new Agg(10), ]
-let agg30 = [ new Agg(30), new Agg(30), new Agg(30), ]
+const agg5 = [], agg10 = [], agg30 = [] // {{{1
+for (let i = 0; i < exchangePoolsize; i++) {
+  agg5.push(new Agg(5)); agg10.push(new Agg(10)); agg30.push(new Agg(30))
+}
 
 function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {{{1
-  let anIdx = (exchangeIdx + 1) * 2, apIdx = anIdx - 1
+  let dataIdx = exchangeIdx + 1, 
+    dsIdx = dataIdx * 2, dbIdx = dsIdx - 1,     // 2: b, s
+    dagg1030sIdx = dsIdx, dagg1030bIdx = dbIdx, //
+    o2 = bsSize + exchangeIdx * 4 + 1           // 4: o, h, l, c
+    dagg1030oIdx = o2, dagg1030hIdx = o2 + 1, dagg1030lIdx = o2 + 2, dagg1030cIdx = o2 + 3
+
   for (let i = 0; i < umf.length; i++) {
-    data[0]              .push(umf[i].time)    
-    data[1 + exchangeIdx].push(umf[i].price)
-    while (plot3min > data[0][0]) {
+    data[0]      .push(umf[i].time) // {{{2
+    data[dataIdx].push(umf[i].price)
+    while (plot2min > data[0][0]) {
       data[0].shift()
       data[1 + exchangeIdx].shift()
     }
 
-    agg5[exchangeIdx].bs(umf[i].time, umf[i].amount, (t, ap, an) => {
-      d[0].push(t); d[apIdx].push(ap); d[anIdx].push(an)
+    agg5[exchangeIdx].bs(umf[i].time, umf[i].amount, (t, b, s) => { // {{{2
+      d[0].push(t); d[dbIdx].push(b); d[dsIdx].push(s)
       while (plot2min > d[0][0]) {
-        d[0].shift(); d[apIdx].shift(); d[anIdx].shift()
+        d[0].shift(); d[dbIdx].shift(); d[dsIdx].shift()
       }
+    })
+    agg10[exchangeIdx].ohlc(umf[i].time, umf[i].price, (t, o, h, l, c) => { // {{{2
+      dagg1030[0]           .push(t)
+      dagg1030[dagg1030oIdx].push(o)
+      dagg1030[dagg1030hIdx].push(h)
+      dagg1030[dagg1030lIdx].push(l)
+      dagg1030[dagg1030cIdx].push(c)
+      dagg1030[dagg1030bIdx].push(null); dagg1030[dagg1030sIdx].push(null)
+      while (dagg1030[0].length > 1 && plot3min > dagg1030[0][0]) {
+        dagg1030[0].shift()
+        dagg1030[dagg1030oIdx].shift()
+        dagg1030[dagg1030hIdx].shift()
+        dagg1030[dagg1030lIdx].shift()
+        dagg1030[dagg1030cIdx].shift()
+        dagg1030[dagg1030bIdx].shift(); dagg1030[dagg1030sIdx].shift()
+      }
+    })
+    agg30[exchangeIdx].bs(umf[i].time, umf[i].amount, (t, b, s) => { // {{{2
+      let db = dagg1030[dagg1030bIdx], ds = dagg1030[dagg1030sIdx],
+        last = dagg1030[0].length - 1, tLast = dagg1030[0][last]
+      db[last] = b; ds[last] = s
     })
   }
 }
@@ -110,7 +149,6 @@ const opts1 = { // {{{1
 
 const opts2 = { // {{{1
   title: "Latest XLM amounts, 5s-aggregated",
-  //scales,
   ...getSize(),
   pxAlign: 0,
   ms: 1,
