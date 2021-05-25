@@ -1,66 +1,15 @@
 const windowSize = 120000; // {{{1
-const exchangePoolsize = 3
-const bsSize = exchangePoolsize * 2
-const ohlcSize = exchangePoolsize * 4
-const data = [ [] ] // raw trades, no aggreration
-for (let i = 0; i < exchangePoolsize; i++) {
-  data.push([])
-}
-const d = [ [] ] // 5s-aggregated buy and sell amounts
-for (let i = 0; i < bsSize; i++) {
-  d.push([])
-}
-const dagg1030 = [ [] ] // 30s buy/sell, 10s OHLC 
-for (let i = 0; i < bsSize + ohlcSize; i++) {
-  dagg1030.push([])
-}
+const noOfExchanges = 3
+const bsSize = noOfExchanges * 2
+const ohlcSize = noOfExchanges * 4
+const ts = new TimeSeries(noOfExchanges)
+const data     = ts.trades  // raw trades, no aggreration
+const d        = ts.amounts // 5s-aggregated buy and sell amounts
+const dagg1030 = ts.history // 30s buy/sell, 10s OHLC 
 let plot2min = +0, plot3min = +0 // float with time
 
-/*const scales = { // {{{1
-  x: {},
-  y: {
-    auto: false,
-    range: [-1000, +1000]
-  }
-}*/
-
-class Agg { // {{{1
-  constructor(paneInSeconds) {
-    this.paneMs = paneInSeconds * 1000
-    this.pt = this.ab = this.as = +0
-    this.o = this.h = this.l = this.c = +0
-  }
-  _agg (qt, cb, aggregate) {
-    if (this.pt > 0) {
-      if (qt > this.pt) {
-        this.pt = qt; cb(qt)
-      }
-    } else { // start aggregation
-      this.pt = qt
-    }
-    aggregate()
-  }
-  bs (t, a, cb) {
-    this._agg(t - t % this.paneMs, 
-      qt => { cb(qt, this.ab, this.as); this.ab = this.as = +0 },
-      () => { if (a > 0) this.ab += a; else this.as += a })
-  }
-  ohlc (t, p, cb) {
-    this._agg(t - t % this.paneMs,
-      qt => { cb(qt, this.o, this.h, this.l, this.c); this.o = +0 },
-      () => {
-        if (this.o == 0) {
-          this.o = this.h = this.l = this.c = p; return;
-        }
-        if (this.h < p) this.h = p
-        else if (this.l > p) this.l = p
-        this.c = p
-      })
-  }
-}
-
 const agg5 = [], agg10 = [], agg30 = [] // {{{1
-for (let i = 0; i < exchangePoolsize; i++) {
+for (let i = 0; i < noOfExchanges; i++) {
   agg5.push(new Agg(5)); agg10.push(new Agg(10)); agg30.push(new Agg(30))
 }
 
@@ -76,7 +25,7 @@ function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {
     data[dataIdx].push(umf[i].price)
     while (plot2min > data[0][0]) {
       data[0].shift()
-      data[1 + exchangeIdx].shift()
+      data[dataIdx].shift()
     }
 
     agg5[exchangeIdx].bs(umf[i].time, umf[i].amount, (t, b, s) => { // {{{2
@@ -105,7 +54,7 @@ function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {
       let db = dagg1030[dagg1030bIdx], ds = dagg1030[dagg1030sIdx],
         last = dagg1030[0].length - 1, tLast = dagg1030[0][last]
       db[last] = b; ds[last] = s
-    })
+    }) // }}}2
   }
 }
 
@@ -259,7 +208,7 @@ let u3 = new uPlot(opts3, data, document.getElementById('charts')); // {{{1
 
 let u1 = new uPlot(opts1, data, document.getElementById('charts')); // {{{1
 
-let u2 = new uPlot(opts2, data, document.getElementById('charts')); // {{{1
+let u2 = new uPlot(opts2, d, document.getElementById('charts')); // {{{1
 
 let freeze = false // {{{1
 function update()
