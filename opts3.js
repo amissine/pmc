@@ -1,7 +1,13 @@
+function getSize() { // {{{1
+  return {
+    width: window.innerWidth - 20,
+    height: window.innerHeight  / 4,
+  }
+}
+
 const opts3 = {
   title: "Aggregated history, 10s prices and 30s amounts",
-  width: 600,
-  height: window.innerHeight  / 4,
+  ...getSize(),
   pxAlign: 0,
   ms: 1,
   cursor: { drag: { x: true, y: true } },

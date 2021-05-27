@@ -4,10 +4,8 @@
 }
 
 textarea.event-log {
-  box-sizing: border-box;
   color: purple;
   display: inline-block;
   resize: none;
   font: 13px courier;
-  margin-right: 10px;
 }

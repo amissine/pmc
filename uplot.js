@@ -58,13 +58,6 @@ function recvTradesXLM (exchangeIdx, umf) { // TODO splice umf into chart data {
   }
 }
 
-function getSize() { // {{{1
-  return {
-    width: window.innerWidth - 20,
-    height: window.innerHeight  / 4,
-  }
-}
-
 const opts1 = { // {{{1
   title: "Latest XLM prices",
   ...getSize(),
