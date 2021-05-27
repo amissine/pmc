@@ -5,7 +5,7 @@ function getSize() { // {{{1
   }
 }
 
-const opts3 = {
+const opts3 = { // {{{1
   title: "Aggregated history, 10s prices and 30s amounts",
   ...getSize(),
   pxAlign: 0,
@@ -28,7 +28,7 @@ const opts3 = {
       side: 1, scale: 'vol', grid: {show: false}
     }
   ],
-  series: [ // {{{1
+  series: [ // {{{2
     { label: 'time', value: (u, v) => v },
     { label: 'kraken buy', scale: 'vol' },
     { label: 'kraken sell', scale: 'vol' },
@@ -48,7 +48,7 @@ const opts3 = {
     { label: 'coinbase h', value: (u, v) => v },
     { label: 'coinbase l', value: (u, v) => v },
     { label: 'coinbase c', value: (u, v) => v },
-  ], // }}}1
+  ], // }}}2
 };
 
 function bsPlugin () { // {{{1
@@ -94,9 +94,39 @@ function labelPlugin () { // {{{1
 function ohlcPlugin () { // {{{1
 
   function ohlcDraw (u) {
-    if (u.data[0].length > 0) {
+    if (u.data[0].length == 0) {
       return;
     }
+    u.ctx.save()
+    let [iMin, iMax] = u.series[0].idxs
+    for (let i = iMin; i < iMax; i++) {
+      let timeAsX  = u.valToPos(u.data[0][i], 'x', true)
+      let openAsY  = u.valToPos(u.data[15][i], 'y', true) // FIXME
+      let highAsY  = u.valToPos(u.data[16][i], 'y', true)
+      let lowAsY   = u.valToPos(u.data[17][i], 'y', true)
+      let closeAsY = u.valToPos(u.data[18][i], 'y', true)
+
+      u.ctx.strokeStyle = 'purple'
+
+      // horizontal open line
+      u.ctx.beginPath()
+      u.ctx.moveTo(timeAsX, openAsY)
+      u.ctx.lineTo(timeAsX+6, openAsY)
+      u.ctx.stroke()
+
+      // vertical high-low line
+      u.ctx.beginPath()
+      u.ctx.moveTo(timeAsX+6, highAsY)
+      u.ctx.lineTo(timeAsX+6, lowAsY)
+      u.ctx.stroke()
+
+      // horizontal close line
+      u.ctx.beginPath()
+      u.ctx.moveTo(timeAsX+6, closeAsY)
+      u.ctx.lineTo(timeAsX+12, closeAsY)
+      u.ctx.stroke()
+    }
+    u.ctx.restore()
   }
 
   return {
