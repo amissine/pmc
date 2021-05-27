@@ -4,6 +4,7 @@
 }
 
 textarea.event-log {
+  box-sizing: border-box;
   color: purple;
   display: inline-block;
   resize: none;

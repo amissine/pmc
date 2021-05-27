@@ -169,42 +169,7 @@ const opts2 = { // {{{1
   ], // }}}2
 };
 
-const opts3 = { // {{{1
-  title: "Aggregated history, 10s prices and 30s amounts",
-  width: 600,
-  height: window.innerHeight  / 4,
-  pxAlign: 0,
-  ms: 1,
-  cursor: { drag: { x: true, y: true } },
-  pxSnap: false,
-  series: // {{{2
-  [
-    {},
-    {
-      stroke: "red",
-      label: 'kraken',
-      paths: uPlot.paths.linear(),
-      pxAlign: 0,
-      points: { show: true }
-    },
-    {
-      stroke: "blue",
-      label: 'bitfinex',
-      paths: uPlot.paths.spline(),
-      pxAlign: 0,
-      points: { show: true }
-    },
-    {
-      stroke: "purple",
-      label: 'coinbase',
-      paths: uPlot.paths.bars({ align: 1 }),
-      pxAlign: 0,
-      points: { show: true }
-    },
-  ], // }}}2
-};
-
-let u3 = new uPlot(opts3, data, document.getElementById('charts')); // {{{1
+let u3 = new uPlot(opts3, dagg1030, document.getElementById('charts')); // {{{1
 
 let u1 = new uPlot(opts1, data, document.getElementById('charts')); // {{{1
 
@@ -219,7 +184,7 @@ function update()
 
   u1.setData(data);
   u2.setData(d);
-  u3.setData(data);
+  u3.setData(dagg1030);
   u1.setScale('x', scale);
   u2.setScale('x', scale);
   u3.setScale('x', scale3);
