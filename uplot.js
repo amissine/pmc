@@ -62,6 +62,9 @@ const opts1 = { // {{{1
   title: "Latest XLM prices",
   ...getSize(),
   ms: 1,
+  plugins: [
+    labelPlugin(),
+  ],
   series: // {{{2
   [ 
     {},
@@ -141,8 +144,8 @@ const opts2 = { // {{{1
     },
     { // {{{3
       label: 'coinbase buy',
-      stroke: "purple",
-      fill: "purple",
+      stroke: "mediumpurple",
+      fill: "mediumpurple",
       lineInterpolation: null,
       width: 1 / devicePixelRatio,
       paths: uPlot.paths.bars({ size: [1], align: -1 }),
@@ -150,8 +153,8 @@ const opts2 = { // {{{1
       points: { show: true }
     },
     { // {{{3
-      stroke: "purple",
-      fill: "purple",
+      stroke: "mediumorchid",
+      fill: "mediumorchid",
       lineInterpolation: null,
       width: 1 / devicePixelRatio,
       label: 'coinbase sell',
