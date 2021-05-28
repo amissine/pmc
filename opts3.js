@@ -24,7 +24,7 @@ const opts3 = { // {{{1
   axes: [
     {}, // time
     {}, // price
-    {  // amount
+    {   // amount
       side: 1, scale: 'vol', grid: {show: false}
     }
   ],
@@ -54,9 +54,34 @@ const opts3 = { // {{{1
 function bsPlugin () { // {{{1
 
   function bsDraw (u) {
-    if (u.data[0].length > 0) {
+    if (u.data[0].length == 0) {
       return;
     }
+    u.ctx.save()
+    let [iMin, iMax] = u.series[0].idxs
+    let zeroAsY = u.valToPos(+0, 'vol', true)
+    let tMinAsX = u.valToPos(u.data[0][0], 'x', true)
+    let dtAsX = u.valToPos(u.data[0][3], 'x', true) - tMinAsX // FIXME
+    for (let i = iMin; i < iMax; i++) {
+      if (u.data[5][i] == null && u.data[6][i] == null) {
+        continue
+      }
+      let timeAsX  = u.valToPos(u.data[0][i], 'x', true)
+      let bAsY     = u.valToPos(u.data[5][i], 'vol', true) // FIXME
+      let sAsY     = u.valToPos(u.data[6][i], 'vol', true)
+
+      drawRect(u.ctx, tMinAsX, dtAsX, timeAsX, bAsY, zeroAsY - bAsY, 'mediumpurple')
+      drawRect(u.ctx, tMinAsX, dtAsX, timeAsX, zeroAsY, sAsY - zeroAsY, 'mediumorchid')
+    }
+    u.ctx.restore()
+  }
+
+  function drawRect (ctx, tMin, dt, t, y, h, fillStyle) {
+    let x = tMin > t - dt ? tMin : t - dt
+    let w = tMin > t - dt ? t - tMin : dt
+
+    ctx.fillStyle = fillStyle
+    ctx.fillRect(x, y, w, h)
   }
 
   return {
