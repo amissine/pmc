@@ -165,11 +165,11 @@ const opts2 = { // {{{1
   ], // }}}2
 };
 
-let u3 = new uPlot(opts3, dagg1030, document.getElementById('charts')); // {{{1
-
 let u1 = new uPlot(opts1, data, document.getElementById('charts')); // {{{1
 
 let u2 = new uPlot(opts2, d, document.getElementById('charts')); // {{{1
+
+let u3 = new uPlot(opts3, dagg1030, document.getElementById('charts')); // {{{1
 
 let freeze = false // {{{1
 function update()
