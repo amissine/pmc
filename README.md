@@ -11,7 +11,7 @@ open -a "Firefox Developer Edition.app" -g "file://$PWD/sandbox.html"
 ```
 From the Internet, [http://73.179.250.74/sandbox.html](http://73.179.250.74/sandbox.html "... if it's on... :)").
 
-Work In Progress:
+Work In Progress, with Python 3.8.7:
 
 ```bash
 python -m http.server &
