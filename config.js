@@ -1,10 +1,10 @@
 const config = {
   exchanges: [
-    {
-      name: 'binance',
+    { name: 'binance', // {{{1
     },
-    {
-      name: 'coinbase',
-    }
+    /* CORS { name: 'bitfinex', // {{{1
+    },*/
+    { name: 'coinbase', // {{{1
+    } // }}}1
   ],
 }

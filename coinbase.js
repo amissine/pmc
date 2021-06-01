@@ -1,11 +1,15 @@
 fetch('https://api.pro.coinbase.com/products')
   .then(response => response.json())
-  .then(data => postMessage(assets2trade(data)))
+  .then(data => postMessage(pairs(data)))
 
 onmessage = e => {
   console.log(e.data)
 }
 
-function assets2trade (data) {
-  return data;
+function pairs (data) {
+  let result = []
+  for (const item of data) {
+    result.push({ pair: item.id })
+  }
+  return result;
 }
