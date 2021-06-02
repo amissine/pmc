@@ -33,24 +33,31 @@
       let d = p.pair.indexOf('-'), b = p.pair.slice(0, d), q = p.pair.slice(d + 1)
       if (!found(base, o => o.text == b)) {
         let bo = document.createElement("option")
-        bo.value = bo.text = b; base.add(bo)
+        bo.onclick = baseSelected; bo.value = bo.text = b; base.add(bo)
       }
       if (!found(quote, o => o.text == q)) {
         let qo = document.createElement("option")
-        qo.value = qo.text = q; quote.add(qo)
+        qo.onclick = quoteSelected; qo.value = qo.text = q; quote.add(qo)
       }
     }
     pair.hidden = false
   }
 
+  function quoteSelected (e) {
+    console.log('quoteSelected', e.target.value)
+  }
+
+  function baseSelected (e) {
+    console.log('baseSelected', e.target.value)
+  }
+
   function found (c, p) {
-    result = false
     for (const item of c) {
-      if (result = p(item)) {
-        break
+      if (p(item)) {
+        return true
       }
     }
-    return result;
+    return false;
   }
 
   function updateIntersection (pairs) {
