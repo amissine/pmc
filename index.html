@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="pm3/uPlot.min.css">
   </head>
   <body>
+    <div id='pairs'>
+      Load base-quote asset pairs... <img src='favicon.ico'/><br/>
+      <div id='pair' hidden='true'>
+        <select id='base'>
+          <option value='' selected>base</option>
+        </select> - <select id='quote'>
+          <option value='' selected>quote</option>
+        </select>
+      </div>
+    </div>
     <script src="pm3/uPlot.iife.min.js"></script>
     <div id="charts"></div>
     <script src='config.js'></script>
