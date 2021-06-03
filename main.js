@@ -17,13 +17,14 @@
       intersectionUpdate(e.data)
       if (++count == config.exchanges.length) {
         intersection.sort((a, b) => a.pair > b.pair)
+        console.log('😅')
         showPairSelectionUI()
-        freeze = true
       }
     }
   }
 
-  function showPairSelectionUI () {
+  function showPairSelectionUI () // {{{1
+  {
     pairs.firstElementChild.hidden = true
     pairs.firstChild.data += ' base-quote asset pairs:'
     let pair  = document.getElementById('pair')
@@ -47,14 +48,16 @@
       o.onclick = quoteSelected
     }
 
-    function quoteSelected (e) {
+    function quoteSelected (e) // {{{2
+    {
       let b = pairCheck(base, (b, q, v) => b == v && q == e.target.value, e)
       if (b > 0) {
-        console.log(base[b].value + '-' + e.target.value)
+        plotInit(base[b].value, e.target.value)
       }
     }
 
-    function pairCheck (counterpart, cb, e) {
+    function pairCheck (counterpart, cb, e) // {{{2
+    {
       if (e.target.value.length == 0) {
         for (let o of e.target.parentElement) {
           o.disabled = false
@@ -83,17 +86,19 @@
       return 0;
     }
 
-    function baseSelected (e) {
+    function baseSelected (e) // {{{2
+    {
       let q = pairCheck(quote, (b, q, v) => q == v && b == e.target.value, e)
       if (q > 0) {
-        console.log(e.target.value + '-' + quote[q].value)
+        plotInit(e.target.value, quote[q].value)
       }
-    }
+    } // }}}2
 
     pair.hidden = false
   }
 
-  function found (c, p) {
+  function found (c, p) // {{{1
+  {
     for (const item of c) {
       if (p(item)) {
         return true
@@ -102,7 +107,8 @@
     return false;
   }
 
-  function intersectionUpdate (pairs) {
+  function intersectionUpdate (pairs) // {{{1
+  {
     if (intersection == null) {
       intersection = pairs
       return;
@@ -110,15 +116,20 @@
     intersection = intersection.filter(p => pairs.find(q => p.pair == q.pair))
   }
   
-  function update()
+  function plotUpdate () // {{{1
   {
     if (!freeze) {
-      requestAnimationFrame(update)
+      requestAnimationFrame(plotUpdate)
     } else {
-      console.log('😅')
+      console.log('😅', freeze)
     }
+    freeze = true
   }
 
-  update()
+  function plotInit (base, quote) // {{{1
+  {
+    console.log(base, quote)
+    plotUpdate()
+  } // }}}1
 
 })(config)
