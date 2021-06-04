@@ -1,11 +1,13 @@
 (function (config) {
-  if (!window.Worker) {
+  if (!window.Worker) // {{{1
+  {
     console.log('This browser doesn\'t support web workers.')
     return;
   }
 
   let freeze = false
 
+  // Select base-quote asset pair {{{1
   let pairs = document.getElementById('pairs')
   let count = 0 // TODO Developer Tools -> Network: Disable Cache
   let intersection = null
@@ -17,8 +19,8 @@
       intersectionUpdate(e.data)
       if (++count == config.exchanges.length) {
         intersection.sort((a, b) => a.pair > b.pair)
-        console.log('😅')
         showPairSelectionUI()
+        console.log('😅')
       }
     }
   }
@@ -126,9 +128,17 @@
     freeze = true
   }
 
+  function plotAddData (m) // {{{
+  {
+    console.log(m.data)
+  }
+
   function plotInit (base, quote) // {{{1
   {
-    console.log(base, quote)
+    for (let exchange of config.exchanges) {
+      exchange.worker.onmessage = plotAddData
+      exchange.worker.postMessage([base, quote])
+    }
     plotUpdate()
   } // }}}1
 

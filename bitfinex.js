@@ -1,4 +1,6 @@
 // TODO use via our server
+(function () {
+
 fetch('https://api-pub.bitfinex.com/v2/tickers?symbols=ALL')
   .then(response => response.json())
   .then(data => postMessage(pairs(data)))
@@ -27,3 +29,5 @@ function pairs (data) {
   }
   return result;
 }
+
+})()

@@ -1,3 +1,8 @@
+//
+// https://docs.pro.coinbase.com/#products
+//
+(function () {
+
 fetch('https://api.pro.coinbase.com/products')
   .then(response => response.json())
   .then(data => postMessage(pairs(data)))
@@ -13,3 +18,5 @@ function pairs (data) {
   }
   return result;
 }
+
+})()

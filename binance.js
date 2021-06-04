@@ -1,3 +1,8 @@
+//
+// https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md
+//
+(function () {
+
 fetch('https://api.binance.com/api/v3/exchangeInfo')
   .then(response => response.json())
   .then(data => postMessage(pairs(data)))
@@ -13,3 +18,5 @@ function pairs (data) {
   }
   return result;
 }
+
+})()
