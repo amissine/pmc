@@ -13,12 +13,13 @@
   doGet(config.urlPairs(config.url), data => postMessage(pairs(data)))
 
   onmessage = e => {
-    let symbol = e.data.reduce((a, c) => a + c),
+    let symbol = `${e.data[0]}${e.data[1]}`, index = e.data[2],
       count = 0, requestInProgress = false, lastUpdateIdP = -1,
       feed = setInterval(() => {
         if (requestInProgress) {
           console.log('- REQUEST IN PROGRESS')
         } else {
+          //console.time(symbol)
           doGet(config.urlBook(config.url, symbol), orderBook)
           if (++count > 9) {
             clearInterval(feed); postMessage(null)
@@ -28,12 +29,13 @@
       }, config.rateLimitMs)
 
     function orderBook (data) {
+      //console.timeEnd(symbol)
       requestInProgress = false
       if (data.lastUpdateId == lastUpdateIdP) {
         return;
       }
       lastUpdateIdP = data.lastUpdateId
-      postMessage(data)
+      postMessage([index, data.bids, data.asks])
     }
   }
 

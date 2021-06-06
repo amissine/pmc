@@ -9,15 +9,16 @@
 
   // Select base-quote asset pair {{{1
   let pairs = document.getElementById('pairs')
-  let count = 0 // TODO Developer Tools -> Network: Disable Cache
-  let intersection = null
+  let msgCount = 0 // TODO Developer Tools -> Network: Disable Cache
+  let intersection = null, index = 0
   for (let exchange of config.exchanges) {
+    exchange.index = index++
     exchange.worker = new Worker(exchange.name + '.js')
     exchange.worker.onmessage = e => {
       pairs.firstChild.data = intersection == null ? exchange.name :
         pairs.firstChild.data + ' ∩ ' + exchange.name
       intersectionUpdate(e.data)
-      if (++count == config.exchanges.length) {
+      if (++msgCount == config.exchanges.length) {
         intersection.sort((a, b) => a.pair > b.pair)
         showPairSelectionUI()
         console.log('😅')
@@ -128,7 +129,7 @@
     freeze = true
   }
 
-  function plotAddData (m) // {{{
+  function plotAddData (m) // {{{1
   {
     console.log(m.data)
   }
@@ -137,7 +138,7 @@
   {
     for (let exchange of config.exchanges) {
       exchange.worker.onmessage = plotAddData
-      exchange.worker.postMessage([base, quote])
+      exchange.worker.postMessage([base, quote, exchange.index])
     }
     plotUpdate()
   } // }}}1
