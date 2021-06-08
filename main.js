@@ -1,4 +1,4 @@
-(function (config) {
+(function (config, ts, data) {
   if (!window.Worker) // {{{1
   {
     console.log('This browser doesn\'t support web workers.')
@@ -21,7 +21,6 @@
       if (++msgCount == config.exchanges.length) {
         intersection.sort((a, b) => a.pair > b.pair)
         showPairSelectionUI()
-        console.log('😅')
       }
     }
   }
@@ -131,7 +130,12 @@
 
   function plotAddData (m) // {{{1
   {
-    console.log(m.data)
+    if (m.data == null) {
+      console.log('😅', 'freezing...')
+      return;
+    }
+    ts.obAdd(data, m.data)
+    console.log(data)
   }
 
   function plotInit (base, quote) // {{{1
@@ -143,4 +147,4 @@
     plotUpdate()
   } // }}}1
 
-})(config)
+})(config, ts2plot, data2plot)
