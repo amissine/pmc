@@ -8,6 +8,7 @@ class TimeSeries // {{{1
     for (let i = 0; i < xCount; i++) {
       this.xIndex.push(1 + i * 4 * obDepth) // asks and bids, price/amount
     }
+    this.total = xCount * 4 * obDepth + 1
   }
   _ts (count) // {{{2
   {
@@ -21,20 +22,39 @@ class TimeSeries // {{{1
   {
     return this._ts(this.xCount * 4 * this.obDepth); // asks and bids, price/amount
   }
-  obAdd(a, item) // {{{2
+  obAdd(a, item, he) // {{{2
   {
     let xIndex = item[0], bids = item[1], asks = item[2]
-    console.assert(bids.length == 5 && asks.length == 5, item)
+    console.assert(bids.length == this.obDepth && asks.length == this.obDepth, item)
 
-    // Order Book arrival time
+    // Order Book Item arrival time
     let size = a[0].push(Date.now())
 
     // Add item data
+    let xo = this.xIndex[xIndex]
+    for (let i = 0; i < asks.length; i++) {
+      a[xo++].push( asks[asks.length - 1 - i][0]) // price
+      a[xo++].push(-asks[asks.length - 1 - i][1]) // amount < 0
+    }
+    for (let i = 0; i < bids.length; i++) {
+      a[xo++].push(bids[i][0]) // price
+      a[xo++].push(bids[i][1]) // amount > 0
+    }
   
     // Add nulls
+    for (let i = 1; i < this.total; i++) {
+      if (a[i].length < size) {
+        a[i].push(null)
+      }
+    }
   
-    // Shift out old data
-  }
+    // Shift out the old data beyond history edge
+    while (a[0].length > 1 && he > a[0][0]) {
+      for (let i = 0; i < this.total; i++) {
+        a[i].shift()
+      }
+    }
+  } // }}}2
 }
 
 // This configuration, combined with config values in binance.js and {{{1
@@ -52,7 +72,12 @@ const config = // {{{1
     } // }}}2
   ],
   orderBookDepth: 5,
+  rateLimitMs: 2500, // TODO correlate with exchanges
 }
 
 let ts2plot = new TimeSeries(config.exchanges.length, config.orderBookDepth),
   data2plot = ts2plot.ob
+
+const opts = // {{{1
+{
+} // TODO complete

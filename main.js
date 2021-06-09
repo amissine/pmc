@@ -1,11 +1,9 @@
-(function (config, ts, data) {
+(function (config, ts, data, opts) {
   if (!window.Worker) // {{{1
   {
     console.log('This browser doesn\'t support web workers.')
     return;
   }
-
-  let freeze = false
 
   // Select base-quote asset pair {{{1
   let pairs = document.getElementById('pairs')
@@ -24,6 +22,8 @@
       }
     }
   }
+
+  let plot, historyEdge, freezing = false, freeze = false
 
   function showPairSelectionUI () // {{{1
   {
@@ -120,26 +120,38 @@
   
   function plotUpdate () // {{{1
   {
+    const now   = Date.now()
+    const scale = {min: now - windowSize, max: now}
+    historyEdge = scale.min
+
+    plot.setData(data)
+    plot.setScale('x', scale)
+
     if (!freeze) {
       requestAnimationFrame(plotUpdate)
     } else {
-      console.log('😅', freeze)
+      console.log('😅', 'frozen')
     }
-    freeze = true
   }
 
   function plotAddData (m) // {{{1
   {
     if (m.data == null) {
-      console.log('😅', 'freezing...')
+      if (!freezing) {
+        freezing = true
+        console.log('😅', 'freezing...')
+        setTimeout(() => { freeze = true }, config.rateLimitMs)
+      }
       return;
     }
-    ts.obAdd(data, m.data)
+    ts.obAdd(data, m.data, historyEdge)
     console.log(data)
   }
 
   function plotInit (base, quote) // {{{1
   {
+    plot = new uPlot(opts, data, document.getElementById('plot'))
+
     for (let exchange of config.exchanges) {
       exchange.worker.onmessage = plotAddData
       exchange.worker.postMessage([base, quote, exchange.index])
@@ -147,4 +159,4 @@
     plotUpdate()
   } // }}}1
 
-})(config, ts2plot, data2plot)
+})(config, ts2plot, data2plot, opts)
