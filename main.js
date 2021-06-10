@@ -121,7 +121,7 @@
   function plotUpdate () // {{{1
   {
     const now   = Date.now()
-    const scale = {min: now - windowSize, max: now}
+    const scale = {min: now - config.timeFrameMs, max: now}
     historyEdge = scale.min
 
     plot.setData(data)

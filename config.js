@@ -18,6 +18,13 @@ class TimeSeries // {{{1
     }
     return a;
   }
+  pane () // {{{2
+  {
+    return {
+      width: window.innerWidth - 20,
+      height: window.innerHeight  - 100,
+    };
+  }
   get ob() // {{{2
   {
     return this._ts(this.xCount * 4 * this.obDepth); // asks and bids, price/amount
@@ -33,12 +40,12 @@ class TimeSeries // {{{1
     // Add item data
     let xo = this.xIndex[xIndex]
     for (let i = 0; i < asks.length; i++) {
-      a[xo++].push( asks[asks.length - 1 - i][0]) // price
+      a[xo++].push(+asks[asks.length - 1 - i][0]) // price
       a[xo++].push(-asks[asks.length - 1 - i][1]) // amount < 0
     }
     for (let i = 0; i < bids.length; i++) {
-      a[xo++].push(bids[i][0]) // price
-      a[xo++].push(bids[i][1]) // amount > 0
+      a[xo++].push(+bids[i][0]) // price
+      a[xo++].push(+bids[i][1]) // amount > 0
     }
   
     // Add nulls
@@ -80,4 +87,97 @@ let ts2plot = new TimeSeries(config.exchanges.length, config.orderBookDepth),
 
 const opts = // {{{1
 {
-} // TODO complete
+  title: 'Order Books',
+  ...ts2plot.pane(),
+  ms: 1,
+  plugins: [labelPlugin(), obPlugin()],
+  scales: { x: {}, amount: {} },
+  axes: [
+    {}, // x, time
+    {}, // y, price
+    {   // amount
+      side: 1, scale: 'amount', grid: { show: false }
+    }
+  ],
+  series: [ // {{{2
+    { label: 'time', value: (u, v) => v },
+    { label: 'X0 asks price 5', value: (u, v) => v },
+    { label: 'X0 asks amount 5', scale: 'amount' },
+    { label: 'X0 asks price 4', value: (u, v) => v },
+    { label: 'X0 asks amount 4', scale: 'amount' },
+    { label: 'X0 asks price 3', value: (u, v) => v },
+    { label: 'X0 asks amount 3', scale: 'amount' },
+    { label: 'X0 asks price 2', value: (u, v) => v },
+    { label: 'X0 asks amount 2', scale: 'amount' },
+    { label: 'X0 asks price 1', value: (u, v) => v },
+    { label: 'X0 asks amount 1', scale: 'amount' },
+    { label: 'X0 bids price 1', value: (u, v) => v },
+    { label: 'X0 bids amount 1', scale: 'amount' },
+    { label: 'X0 bids price 2', value: (u, v) => v },
+    { label: 'X0 bids amount 2', scale: 'amount' },
+    { label: 'X0 bids price 3', value: (u, v) => v },
+    { label: 'X0 bids amount 3', scale: 'amount' },
+    { label: 'X0 bids price 4', value: (u, v) => v },
+    { label: 'X0 bids amount 4', scale: 'amount' },
+    { label: 'X0 bids price 5', value: (u, v) => v },
+    { label: 'X0 bids amount 5', scale: 'amount' },
+    { label: 'X1 asks price 5', value: (u, v) => v },
+    { label: 'X1 asks amount 5', scale: 'amount' },
+    { label: 'X1 asks price 4', value: (u, v) => v },
+    { label: 'X1 asks amount 4', scale: 'amount' },
+    { label: 'X1 asks price 3', value: (u, v) => v },
+    { label: 'X1 asks amount 3', scale: 'amount' },
+    { label: 'X1 asks price 2', value: (u, v) => v },
+    { label: 'X1 asks amount 2', scale: 'amount' },
+    { label: 'X1 asks price 1', value: (u, v) => v },
+    { label: 'X1 asks amount 1', scale: 'amount' },
+    { label: 'X1 bids price 1', value: (u, v) => v },
+    { label: 'X1 bids amount 1', scale: 'amount' },
+    { label: 'X1 bids price 2', value: (u, v) => v },
+    { label: 'X1 bids amount 2', scale: 'amount' },
+    { label: 'X1 bids price 3', value: (u, v) => v },
+    { label: 'X1 bids amount 3', scale: 'amount' },
+    { label: 'X1 bids price 4', value: (u, v) => v },
+    { label: 'X1 bids amount 4', scale: 'amount' },
+    { label: 'X1 bids price 5', value: (u, v) => v },
+    { label: 'X1 bids amount 5', scale: 'amount' },
+  ] // }}}2
+}
+
+function obPlugin () // {{{1
+{
+  function obDraw (u) {
+    if (u.data[0].length == 0) {
+      return;
+    }
+    u.ctx.save()
+    let [iMin, iMax] = u.series[0].idxs
+    for (let i = iMin; i < iMax; i++) {
+    }
+    u.ctx.restore()
+  }
+  return {
+    hooks: { draw: obDraw }
+  };
+}
+
+function labelPlugin () // {{{1
+{
+  let legendEl
+
+  function init (u, opts) {
+    legendEl = u.root.querySelector('.u-legend')
+    legendEl.classList.remove('u-inline')
+    uPlot.assign(legendEl.style, { display: 'none' })
+  }
+
+  function update (u) {
+  }
+
+  return {
+    hooks: {
+      init: init,
+      setCursor: update
+    }
+  };
+}
