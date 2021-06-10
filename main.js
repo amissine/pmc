@@ -54,6 +54,7 @@
     {
       let b = pairCheck(base, (b, q, v) => b == v && q == e.target.value, e)
       if (b > 0) {
+        base.disabled = quote.disabled = true
         plotInit(base[b].value, e.target.value)
       }
     }
@@ -92,6 +93,7 @@
     {
       let q = pairCheck(quote, (b, q, v) => q == v && b == e.target.value, e)
       if (q > 0) {
+        base.disabled = quote.disabled = true
         plotInit(e.target.value, quote[q].value)
       }
     } // }}}2
