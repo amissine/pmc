@@ -72,10 +72,12 @@ const config = // {{{1
   timeFrameMs: 120000,
   exchanges: [
     { name: 'binance', // {{{2
+      colors: ['green', 'darkseagreen'],
     },
     /* CORS { name: 'bitfinex', // {{{2
     },*/
     { name: 'coinbase', // {{{2
+      colors: ['purple', 'mediumpurple'],
     } // }}}2
   ],
   orderBookDepth: 5,
@@ -153,8 +155,43 @@ function obPlugin () // {{{1
     u.ctx.save()
     let [iMin, iMax] = u.series[0].idxs
     for (let i = iMin; i < iMax; i++) {
+      for (let xi = 0; xi < ts2plot.xIndex.length; xi++) {
+        let xo = ts2plot.xIndex[xi]
+        if (u.data[xo][i] != null) {
+          obDrawPricesAmounts(u, xi, xo, i)
+        }
+      }
     }
     u.ctx.restore()
+  }
+  function obDrawPricesAmounts (u, xi, xo, i) {
+    let time  = u.valToPos(u.data[ 0][i], 'x', true)
+    let prices = [], amounts = [], xoLimit = xo + ts2plot.obDepth * 4
+    while (xo < xoLimit) {
+      prices.push(u.valToPos(u.data[xo++][i], 'y', true))
+      amounts.push(u.valToPos(u.data[xo++][i], 'amount', true))
+    }
+    u.ctx.strokeStyle = config.exchanges[xi].colors[0] // price color
+    for (price of prices) {
+      u.ctx.beginPath()
+      u.ctx.moveTo(time, price)
+      u.ctx.lineTo(time + 6, price)
+      u.ctx.stroke()
+    }
+    let minAsks = prices[ts2plot.obDepth - 1], maxBids = prices[ts2plot.obDepth]
+    u.ctx.beginPath()
+    u.ctx.moveTo(time, minAsks)
+    u.ctx.lineTo(time, maxBids)
+    u.ctx.stroke()
+
+    u.ctx.strokeStyle = config.exchanges[xi].colors[1] // amount color
+    for (let k = 0; k < ts2plot.obDepth; k++) {
+      let amountAsks = amounts[k], amountBids = amounts[2 * ts2plot.obDepth - 1 - k]
+      u.ctx.beginPath()
+      u.ctx.moveTo(time + 10 + 6 * k, amountAsks)
+      u.ctx.lineTo(time + 10 + 6 * k, amountBids)
+      u.ctx.stroke()
+    }
   }
   return {
     hooks: { draw: obDraw }

@@ -8,6 +8,7 @@
     urlPairs: u => `${u}/exchangeInfo`,
     urlBook: (u, s) => `${u}/depth?symbol=${s}&limit=5`,
     rateLimitMs: 2500,
+    count: 99,
   }
 
   doGet(config.urlPairs(config.url), data => postMessage(pairs(data)))
@@ -21,7 +22,7 @@
         } else {
           //console.time(symbol)
           doGet(config.urlBook(config.url, symbol), orderBook)
-          if (++count > 9) {
+          if (++count > config.count) {
             clearInterval(feed); postMessage(null)
           }
           requestInProgress = true
