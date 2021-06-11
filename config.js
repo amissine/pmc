@@ -72,12 +72,12 @@ const config = // {{{1
   timeFrameMs: 120000,
   exchanges: [
     { name: 'binance', // {{{2
-      colors: ['green', 'darkseagreen'],
+      colors: ['green', 'palegreen'],
     },
     /* CORS { name: 'bitfinex', // {{{2
     },*/
     { name: 'coinbase', // {{{2
-      colors: ['purple', 'mediumpurple'],
+      colors: ['purple', 'palegoldenrod'],
     } // }}}2
   ],
   orderBookDepth: 5,

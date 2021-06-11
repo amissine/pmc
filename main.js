@@ -147,7 +147,7 @@
       return;
     }
     ts.obAdd(data, m.data, historyEdge)
-    console.log(data)
+    //console.log(data)
   }
 
   function plotInit (base, quote) // {{{1
