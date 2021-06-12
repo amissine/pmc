@@ -9,6 +9,7 @@ class TimeSeries // {{{1
       this.xIndex.push(1 + i * 4 * obDepth) // asks and bids, price/amount
     }
     this.total = xCount * 4 * obDepth + 1
+    this.timestamp = 0
   }
   _ts (count) // {{{2
   {
@@ -31,11 +32,14 @@ class TimeSeries // {{{1
   }
   obAdd(a, item, he) // {{{2
   {
-    let xIndex = item[0], bids = item[1], asks = item[2]
-    console.assert(bids.length == this.obDepth && asks.length == this.obDepth, item)
+    let xIndex = item[0], bids = item[1], asks = item[2], timestamp = item[3]
+    console.assert(
+      timestamp > this.timestamp &&
+      bids.length == this.obDepth && asks.length == this.obDepth, item)
+    this.timestamp = timestamp
 
     // Order Book Item arrival time
-    let size = a[0].push(Date.now())
+    let size = a[0].push(timestamp) //Date.now())
 
     // Add item data
     let xo = this.xIndex[xIndex]

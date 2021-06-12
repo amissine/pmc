@@ -35,7 +35,7 @@
         return;
       }
       sequenceP = data.sequence
-      postMessage([index, data.bids.slice(0, 5), data.asks.slice(0, 5)])
+      postMessage([index, data.bids.slice(0, 5), data.asks.slice(0, 5), Date.now()])
     }
   }
 

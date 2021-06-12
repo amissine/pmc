@@ -36,7 +36,7 @@
         return;
       }
       lastUpdateIdP = data.lastUpdateId
-      postMessage([index, data.bids, data.asks])
+      postMessage([index, data.bids, data.asks, Date.now()])
     }
   }
 
