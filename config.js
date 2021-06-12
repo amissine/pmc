@@ -158,19 +158,21 @@ function obPlugin () // {{{1
       return;
     }
     u.ctx.save()
-    let [iMin, iMax] = u.series[0].idxs
+    let [iMin, iMax] = u.series[0].idxs, timeP = 0
     for (let i = iMin; i < iMax; i++) {
+      let xoP = 0, time = u.data[0][i]
       for (let xi = 0; xi < ts2plot.xIndex.length; xi++) {
         let xo = ts2plot.xIndex[xi]
         if (u.data[xo][i] != null) {
-          obDrawPricesAmounts(u, xi, xo, i)
+          obDrawPricesAmounts(u, xi, xo, i, xoP != xo && time < timeP + 1500)
+          xoP = xo; timeP = time
         }
       }
     }
     u.ctx.restore()
   }
-  function obDrawPricesAmounts (u, xi, xo, i) {
-    let time  = u.valToPos(u.data[ 0][i], 'x', true)
+  function obDrawPricesAmounts (u, xi, xo, i, mirror) {
+    let tX  = u.valToPos(u.data[0][i], 'x', true)
     let prices = [], amounts = [], xoLimit = xo + ts2plot.obDepth * 4
     while (xo < xoLimit) {
       prices.push(u.valToPos(u.data[xo++][i], 'y', true))
@@ -179,22 +181,27 @@ function obPlugin () // {{{1
     u.ctx.strokeStyle = config.exchanges[xi].colors[0] // price color
     for (price of prices) {
       u.ctx.beginPath()
-      u.ctx.moveTo(time, price)
-      u.ctx.lineTo(time + 6, price)
+      u.ctx.moveTo(tX, price)
+      u.ctx.lineTo(tX + 6, price)
       u.ctx.stroke()
     }
     let minAsks = prices[ts2plot.obDepth - 1], maxBids = prices[ts2plot.obDepth]
     u.ctx.beginPath()
-    u.ctx.moveTo(time, minAsks)
-    u.ctx.lineTo(time, maxBids)
+    if (mirror) {
+      u.ctx.moveTo(tX + 6, minAsks)
+      u.ctx.lineTo(tX + 6, maxBids)
+    } else {
+      u.ctx.moveTo(tX, minAsks)
+      u.ctx.lineTo(tX, maxBids)
+    }
     u.ctx.stroke()
 
     u.ctx.strokeStyle = config.exchanges[xi].colors[1] // amount color
     for (let k = 0; k < ts2plot.obDepth; k++) {
       let amountAsks = amounts[k], amountBids = amounts[2 * ts2plot.obDepth - 1 - k]
       u.ctx.beginPath()
-      u.ctx.moveTo(time + 10 + 6 * k, amountAsks)
-      u.ctx.lineTo(time + 10 + 6 * k, amountBids)
+      u.ctx.moveTo(tX + 10 + 6 * k, amountAsks)
+      u.ctx.lineTo(tX + 10 + 6 * k, amountBids)
       u.ctx.stroke()
     }
   }
