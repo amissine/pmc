@@ -1,21 +1,25 @@
 <!doctype html>
 <html>
-<head lang='en'>
-	<meta charset='utf-8'>
-	<meta name='viewport' content='width=device-width'>
-	<title>rollup-starter-app</title>
-
-	<style>
-		body {
-			font-family: 'Helvetica Neue', Arial, sans-serif;
-			color: #333;
-			font-weight: 300;
-		}
-	</style>
-</head>
-<body>
-	<h1>rollup-starter-app</h1>
-	<p>The time is <span id='time-now'>...</span></p>
-	<script src='bundle.js'></script>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <title>pm3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="pm3/uPlot.min.css">
+  </head>
+  <body>
+    <div id='pairs'>
+      Load base-quote asset pairs... <img src='favicon.ico'/>
+      <div id='pair' hidden='true'>
+        <select id='base'>
+          <option value='' selected>base</option>
+        </select> - <select id='quote'>
+          <option value='' selected>quote</option>
+        </select>
+      </div>
+    </div>
+    <script src="pm3/uPlot.iife.min.js"></script>
+    <div id="plot"></div>
+    <script src='config.js'></script>
+    <script src='main.js'></script>
+  </body>
 </html>
