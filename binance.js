@@ -8,7 +8,7 @@
     urlPairs: u => `${u}/exchangeInfo`,
     urlBook: (u, s) => `${u}/depth?symbol=${s}&limit=5`,
     rateLimitMs: 2500,
-    count: 99,
+    count: 999,
   }
 
   doGet(config.urlPairs(config.url), data => postMessage(pairs(data)))

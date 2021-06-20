@@ -17,3 +17,5 @@ Work In Progress, with Python 3.8.7:
 python -m http.server &
 open -a "Firefox Developer Edition.app" -g 'http://localhost:8000'
 ```
+
+Work In Progress, with [rollup](https://github.com/rollup/rollup-starter-app "template"): `npm run dev`, then navigate to [localhost:5000](http://localhost:5000)

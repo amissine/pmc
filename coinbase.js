@@ -7,7 +7,7 @@
     url: 'https://api.pro.coinbase.com/products',
     urlBook: (u, p) => `${u}/${p}/book?level=2`,
     rateLimitMs: 2500,
-    count: 99,
+    count: 999,
   }
 
   doGet(config.url, data => postMessage(pairs(data)))

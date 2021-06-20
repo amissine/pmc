@@ -33,13 +33,14 @@ class TimeSeries // {{{1
   obAdd(a, item, he) // {{{2
   {
     let xIndex = item[0], bids = item[1], asks = item[2], timestamp = item[3]
+    item.push(this.timestamp)
     console.assert(
-      timestamp > this.timestamp &&
+      timestamp >= this.timestamp &&
       bids.length == this.obDepth && asks.length == this.obDepth, item)
     this.timestamp = timestamp
 
     // Order Book Item arrival time
-    let size = a[0].push(timestamp) //Date.now())
+    let size = a[0].push(timestamp)
 
     // Add item data
     let xo = this.xIndex[xIndex]
