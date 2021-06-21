@@ -1,7 +1,4 @@
-import update from './update.js';
+import pm3 from './pm3.js'
+import { config, ts2plot, data2plot, opts } from './config.js'
 
-// even though Rollup is bundling all your files together, errors and
-// logs will still point to your original source modules
-console.log('if you have sourcemaps enabled in your devtools, click on main.js:5 -->');
-
-update();
+pm3(config, ts2plot, data2plot, opts)

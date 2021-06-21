@@ -1,4 +1,4 @@
-(function (config, ts, data, opts) {
+export default function pm3 (config, ts, data, opts) {
   if (!window.Worker) // {{{1
   {
     console.log('This browser doesn\'t support web workers.')
@@ -147,6 +147,7 @@
       return;
     }
     ts.obAdd(data, m.data, historyEdge)
+    //console.log(data)
   }
 
   function plotInit (base, quote) // {{{1
@@ -160,4 +161,4 @@
     plotUpdate()
   } // }}}1
 
-})(config, ts2plot, data2plot, opts)
+}

@@ -9,3 +9,6 @@ public/bundle*
 # Vim
 *.swp
 *.swo
+
+# Mac OS
+.DS_Store
