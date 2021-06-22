@@ -15,7 +15,7 @@
 
   onmessage = e => {
     let symbol = `${e.data[0]}${e.data[1]}`, index = e.data[2],
-      count = 0, requestInProgress = false, lastUpdateIdP = -1,
+      count = 0, requestInProgress = false, //lastUpdateIdP = -1,
       feed = setInterval(() => {
         if (requestInProgress) {
           console.log('- REQUEST IN PROGRESS')
@@ -32,10 +32,12 @@
     function orderBook (data) {
       //console.timeEnd(symbol)
       requestInProgress = false
+      /*
       if (data.lastUpdateId == lastUpdateIdP) {
         return;
       }
       lastUpdateIdP = data.lastUpdateId
+      */
       postMessage([index, data.bids, data.asks, Date.now()])
     }
   }

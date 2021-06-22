@@ -14,7 +14,7 @@
 
   onmessage = e => {
     let product = `${e.data[0]}-${e.data[1]}`, index = e.data[2],
-      count = 0, requestInProgress = false, sequenceP = -1,
+      count = 0, requestInProgress = false, //sequenceP = -1,
       feed = setInterval(() => {
         if (requestInProgress) {
           console.log('- REQUEST IN PROGRESS')
@@ -31,10 +31,12 @@
     function orderBook (data) {
       //console.timeEnd(product)
       requestInProgress = false
+      /*
       if (data.sequence == sequenceP) {
         return;
       }
       sequenceP = data.sequence
+      */
       postMessage([index, data.bids.slice(0, 5), data.asks.slice(0, 5), Date.now()])
     }
   }

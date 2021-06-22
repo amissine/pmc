@@ -80,8 +80,8 @@ export const config = // {{{1
       colors: [/*'green'*/'#00800080', /*'palegreen'*/'#98FB9880'],
 // see also https://css-tricks.com/snippets/css/named-colors-and-hex-equivalents/
     },
-    /* CORS { name: 'bitfinex', // {{{2
-    },*/
+    { name: 'bitfinex', // {{{2
+    },
     { name: 'coinbase', // {{{2
       colors: [/*'purple'*/'#80008080', /*'palegoldenrod'*/'#EEE8AA80'],
     } // }}}2
