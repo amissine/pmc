@@ -8,12 +8,21 @@
     urlBook: (u, p) => `${u}?pair=${p}`,
     rateLimitMs: 2500,
     count: 999,
+    map: pair => {
+      let dash = pair.indexOf('-')
+      let base = pair.slice(0, dash), quote = pair.slice(dash + 1)
+      switch (quote) {
+        case 'USD':
+          return `${base}-USDC`;
+      }
+      return pair;
+    },
   }
 
   doGet(config.url, data => postMessage(pairs(data)))
 
   onmessage = e => {
-    let symbol = pair(e.data[0], e.data[1], index = e.data[2],
+    let symbol = pair(e.data[0], e.data[1]), index = e.data[2],
       count = 0, requestInProgress = false, 
       feed = setInterval(() => {
         if (requestInProgress) {
@@ -34,12 +43,6 @@
       postMessage([index, bids(data), asks(data), Date.now()])
     }
   }
-/*
-fetch('https://api-pub.bitfinex.com/v2/tickers?symbols=ALL')
-  .then(response => response.json())
-  .then(data => postMessage(pairs(data)))
-  .catch(e => console.log(e))
-*/
 
   function doGet (url, cb) {
     fetch(url).
@@ -70,10 +73,10 @@ fetch('https://api-pub.bitfinex.com/v2/tickers?symbols=ALL')
       if (pair.indexOf(':') > 0) {
         pair = pair.replace(':', '-')
       } else {
-        let base = pair(0, 3), quote = pair(3)
+        let base = pair.slice(0, 3), quote = pair.slice(3)
         pair = base + '-' + quote
       }
-      result.push({ pair: pair })
+      result.push({ pair: config.map(pair) })
     }
     return result;
   }
