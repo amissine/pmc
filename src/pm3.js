@@ -7,14 +7,14 @@ export default function pm3 (config, ts, data, opts) {
 
   // Select base-quote asset pair {{{1
   let pairs = document.getElementById('pairs')
+  let cogs = document.getElementById('cogs')
   let msgCount = 0 // TODO Developer Tools -> Network: Disable Cache
   let intersection = null, index = 0
   for (let exchange of config.exchanges) {
     exchange.index = index++
     exchange.worker = new Worker(exchange.name + '.js')
     exchange.worker.onmessage = e => {
-      pairs.firstChild.data = intersection == null ? exchange.name :
-        pairs.firstChild.data + ' ∩ ' + exchange.name
+      colorX(exchange)
       intersectionUpdate(e.data)
       if (++msgCount == config.exchanges.length) {
         intersection.sort((a, b) => a.pair > b.pair)
@@ -25,10 +25,27 @@ export default function pm3 (config, ts, data, opts) {
 
   let plot, historyEdge, freezing = false, freeze = false
 
+  function colorX (x) // {{{1
+  {
+    let head = document.createElement('span')
+    head.style.color = x.colors[0]
+    head.textContent = x.name
+    if (intersection == null) {
+      pairs.firstChild.data = ''
+    } else {
+      let u = document.createElement('span')
+      u.textContent = ' ∩ '
+      pairs.insertBefore(u, cogs)
+    }
+    pairs.insertBefore(head, cogs)
+  }
+
   function showPairSelectionUI () // {{{1
   {
-    pairs.firstElementChild.hidden = true
-    pairs.firstChild.data += ' base-quote asset pairs:'
+    cogs.hidden = true
+    let tail = document.createElement('span')
+    tail.textContent = ' base-quote asset pairs:'
+    pairs.insertBefore(tail, cogs)
     let pair  = document.getElementById('pair')
     let base  = document.getElementById('base')
     let quote = document.getElementById('quote')

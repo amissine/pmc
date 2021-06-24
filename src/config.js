@@ -77,14 +77,14 @@ export const config = // {{{1
   timeFrameMs: 120000,
   exchanges: [
     { name: 'binance', // {{{2
-      colors: [/*'green'*/'#00800080', /*'palegreen'*/'#98FB9880'],
+      colors: [/*'green'*/'#008000', /*'palegreen'*/'#98FB9880'],
 // see also https://css-tricks.com/snippets/css/named-colors-and-hex-equivalents/
     },
     { name: 'bitfinex', // {{{2
-      colors: [/*'blue'*/'#0000FF80', /*cornflowerblue*/'#6495ED80'],
+      colors: [/*'blue'*/'#0000FF', /*cornflowerblue*/'#6495ED80'],
     },
     { name: 'coinbase', // {{{2
-      colors: [/*'purple'*/'#80008080', /*'palegoldenrod'*/'#EEE8AA80'],
+      colors: [/*'purple'*/'#800080', /*'palegoldenrod'*/'#EEE8AA80'],
     } // }}}2
   ],
   orderBookDepth: 5,
