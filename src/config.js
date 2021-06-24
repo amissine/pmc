@@ -33,7 +33,7 @@ class TimeSeries // {{{1
   obAdd(a, item, he) // {{{2
   {
     let xIndex = item[0], bids = item[1], asks = item[2], timestamp = item[3]
-    item.push(this.timestamp)
+    item.push(this.timestamp) // to use when assert fails
     console.assert(
       timestamp >= this.timestamp &&
       bids.length == this.obDepth && asks.length == this.obDepth, item)
@@ -69,8 +69,8 @@ class TimeSeries // {{{1
   } // }}}2
 }
 
-// This configuration, combined with config values in binance.js and {{{1
-// coinbase.js,  feeds and plots order books of depth 5 each 2500 ms. The data 
+// This configuration, combined with config values in binance.js, bitfinex.js, {{{1
+// and coinbase.js, feeds and plots order books of depth 5 each 2500 ms. The data 
 // visibility duration (the time frame) is 120000 ms.
 export const config = // {{{1
 {
@@ -81,6 +81,7 @@ export const config = // {{{1
 // see also https://css-tricks.com/snippets/css/named-colors-and-hex-equivalents/
     },
     { name: 'bitfinex', // {{{2
+      colors: [/*'blue'*/'#0000FF80', /*cornflowerblue*/'#6495ED80'],
     },
     { name: 'coinbase', // {{{2
       colors: [/*'purple'*/'#80008080', /*'palegoldenrod'*/'#EEE8AA80'],
@@ -109,7 +110,7 @@ export const opts = // {{{1
   ],
   series: [ // {{{2
     { label: 'time', value: (u, v) => v },
-    { label: 'X0 asks price 5', value: (u, v) => v },
+    { label: 'X0 asks price 5', value: (u, v) => v }, // {{{3
     { label: 'X0 asks amount 5', scale: 'amount' },
     { label: 'X0 asks price 4', value: (u, v) => v },
     { label: 'X0 asks amount 4', scale: 'amount' },
@@ -129,7 +130,7 @@ export const opts = // {{{1
     { label: 'X0 bids amount 4', scale: 'amount' },
     { label: 'X0 bids price 5', value: (u, v) => v },
     { label: 'X0 bids amount 5', scale: 'amount' },
-    { label: 'X1 asks price 5', value: (u, v) => v },
+    { label: 'X1 asks price 5', value: (u, v) => v }, // {{{3
     { label: 'X1 asks amount 5', scale: 'amount' },
     { label: 'X1 asks price 4', value: (u, v) => v },
     { label: 'X1 asks amount 4', scale: 'amount' },
@@ -149,12 +150,33 @@ export const opts = // {{{1
     { label: 'X1 bids amount 4', scale: 'amount' },
     { label: 'X1 bids price 5', value: (u, v) => v },
     { label: 'X1 bids amount 5', scale: 'amount' },
+    { label: 'X2 asks price 5', value: (u, v) => v }, // {{{3
+    { label: 'X2 asks amount 5', scale: 'amount' },
+    { label: 'X2 asks price 4', value: (u, v) => v },
+    { label: 'X2 asks amount 4', scale: 'amount' },
+    { label: 'X2 asks price 3', value: (u, v) => v },
+    { label: 'X2 asks amount 3', scale: 'amount' },
+    { label: 'X2 asks price 2', value: (u, v) => v },
+    { label: 'X2 asks amount 2', scale: 'amount' },
+    { label: 'X2 asks price 1', value: (u, v) => v },
+    { label: 'X2 asks amount 1', scale: 'amount' },
+    { label: 'X2 bids price 1', value: (u, v) => v },
+    { label: 'X2 bids amount 1', scale: 'amount' },
+    { label: 'X2 bids price 2', value: (u, v) => v },
+    { label: 'X2 bids amount 2', scale: 'amount' },
+    { label: 'X2 bids price 3', value: (u, v) => v },
+    { label: 'X2 bids amount 3', scale: 'amount' },
+    { label: 'X2 bids price 4', value: (u, v) => v },
+    { label: 'X2 bids amount 4', scale: 'amount' },
+    { label: 'X2 bids price 5', value: (u, v) => v },
+    { label: 'X2 bids amount 5', scale: 'amount' }, // }}}3
   ] // }}}2
 }
 
 function obPlugin () // {{{1
 {
-  function obDraw (u) {
+  function obDraw (u) // {{{2
+  {
     if (u.data[0].length == 0) {
       return;
     }
@@ -172,7 +194,9 @@ function obPlugin () // {{{1
     }
     u.ctx.restore()
   }
-  function obDrawPricesAmounts (u, xi, xo, i, mirror) {
+
+  function obDrawPricesAmounts (u, xi, xo, i, mirror) // {{{2
+  {
     let tX  = u.valToPos(u.data[0][i], 'x', true)
     let prices = [], amounts = [], xoLimit = xo + ts2plot.obDepth * 4
     while (xo < xoLimit) {
@@ -205,7 +229,8 @@ function obPlugin () // {{{1
       u.ctx.lineTo(tX + 10 + 6 * k, amountBids)
       u.ctx.stroke()
     }
-  }
+  } // }}}2
+
   return {
     hooks: { draw: obDraw }
   };
