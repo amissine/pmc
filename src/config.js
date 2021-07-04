@@ -88,7 +88,15 @@ export const config = // {{{1
     } // }}}2
   ],
   orderBookDepth: 5,
-  rateLimitMs: 2500, // TODO correlate with exchanges
+  rateLimitMs: 2500, // TODO correlate with workers
+  commands: [
+    {
+      name: 'arbitrage',
+      init: c => {
+        console.log('- init', c.name)
+      },
+    },
+  ],
 }
 
 export let ts2plot = new TimeSeries(config.exchanges.length, config.orderBookDepth)

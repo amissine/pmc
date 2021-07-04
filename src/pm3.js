@@ -171,6 +171,9 @@ export default function pm3 (config, ts, data, opts) {
   {
     plot = new uPlot(opts, data, document.getElementById('plot'))
 
+    for (const command of config.commands) {
+      command.init(command)
+    }
     for (let exchange of config.exchanges) {
       exchange.worker.onmessage = plotAddData
       exchange.worker.postMessage([base, quote, exchange.index])
