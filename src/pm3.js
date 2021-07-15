@@ -29,6 +29,7 @@ export default function pm3 (config, ts, data, opts) {
   {
     let head = document.createElement('span')
     head.style.color = x.colors[0]
+    head.style.fontWeight = 'bold'
     head.textContent = x.name
     if (intersection == null) {
       pairs.firstChild.data = ''
