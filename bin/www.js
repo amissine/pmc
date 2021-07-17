@@ -14,7 +14,7 @@ app.get('/bitfinex', (req, res) => {
   Bitfinex.get(req, res)
 })
 
-const server = app.listen(5000, () => {
+const server = app.listen(5001, () => {
   let sa = server.address()
   console.log('- listening at http://%s:%s', sa.address, sa.port)
 })

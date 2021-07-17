@@ -1,5 +1,5 @@
 {
-  "name": "pm3",
+  "name": "pmc",
   "version": "0.0.3",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
