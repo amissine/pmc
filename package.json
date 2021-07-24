@@ -12,7 +12,6 @@
     "express": "^4.17.1"
   },
   "scripts": {
-    "postinstall": "bin/check-links.sh",
     "build": "rollup -c",
     "watch": "rollup -c -w",
     "dev": "npm-run-all --parallel start watch",
