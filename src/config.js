@@ -2,7 +2,7 @@ export function config (command) {
 
   const commands = {
     'arbitrage': function (feed) {
-      feed()
+      feed(null)
     },
   }
 

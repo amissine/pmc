@@ -5,7 +5,7 @@ let header = document.getElementById('header')
 header.textContent = 'Arbitrage opportunities since ' + new Date()
 
 const onmessage = e => {
-  console.log(e.data)
+  feed(e.data)
 }
 window.addEventListener("message", onmessage)
 config('arbitrage')(feed)
